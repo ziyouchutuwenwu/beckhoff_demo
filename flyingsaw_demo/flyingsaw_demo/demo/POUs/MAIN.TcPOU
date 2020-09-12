@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
+  <POU Name="MAIN" Id="{7f83cc0a-42dc-414a-a914-ff841541d6be}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[flyingsaw.Master();
+flyingsaw.Slave();
+
+flyingsaw.checkPower();
+flyingsaw.checkFlyingSaw();
+flyingsaw.checkMove();
+flyingsaw.checkReset();]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="195" Count="1" />
+      <LineId Id="280" Count="3" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

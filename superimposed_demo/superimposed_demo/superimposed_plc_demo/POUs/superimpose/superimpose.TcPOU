@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
+  <POU Name="superimpose" Id="{fe3936ae-0e88-4e13-84de-a9ca4dc1186c}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM superimpose
+VAR
+	axis1:axis_ref;
+	axis2:axis_ref;
+			
+	mcSetPosition1, mcSetPosition2: MC_SetPosition;
+	setPositionOutput1, setPositionOutput2: ST_McOutputs;
+	shouldSetPosition: BOOL;
+	
+	mcMoveVelocity1: MC_MoveVelocity;
+	mcMoveVelocity2: MC_MoveVelocity;
+	moveVelocityOutput1,moveVelocityOutput2: ST_McOutputs;
+	shouldMoveVelocity: BOOL;
+	
+	mcMoveSuperImposed: MC_MoveSuperImposed;
+	moveSuperImposedOutput: superimposed_actural;
+	
+	positionDiff: LREAL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(*
+axis1();
+axis2();
+*)
+
+power();
+checkSetPosition();
+checkMoveVelocity();
+checkToSuperimpose();
+
+mcMoveSuperImposed.Execute:= shouldMoveVelocity;
+mcMoveSuperImposed.Mode := 2;
+mcMoveSuperImposed.Distance := 300;
+mcMoveSuperImposed.VelocityDiff := 500;
+mcMoveSuperImposed.VelocityProcess := 700;
+mcMoveSuperImposed.Length := 1000;
+
+positionDiff:= axis2.NcToPlc.SetPos - axis1.NcToPlc.SetPos;
+mcSetPosition1.Execute := shouldSetPosition;
+mcSetPosition2.Execute := shouldSetPosition;
+mcMoveVelocity1.Execute := shouldMoveVelocity;
+mcMoveVelocity2.Execute := shouldMoveVelocity;]]></ST>
+    </Implementation>
+    <Action Name="checkMoveVelocity" Id="{8308279d-2d5f-40ba-b251-165ea4e62e5c}">
+      <Implementation>
+        <ST><![CDATA[mcMoveVelocity1(
+	Axis:= axis1, 
+	Execute:= shouldMoveVelocity, 
+	Velocity:= 200, 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	Direction:= 1, 
+	BufferMode:= , 
+	Options:= , 
+	InVelocity=> moveVelocityOutput1.Done, 
+	Busy=> moveVelocityOutput1.Busy, 
+	Active=> moveVelocityOutput1.Active, 
+	CommandAborted=> moveVelocityOutput1.CommandAborted, 
+	Error=> moveVelocityOutput1.Error, 
+	ErrorID=> moveVelocityOutput1.ErrorID);
+	
+mcMoveVelocity2(
+	Axis:= axis2, 
+	Execute:= shouldMoveVelocity, 
+	Velocity:= 200, 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	Direction:= 1, 
+	BufferMode:= , 
+	Options:= , 
+	InVelocity=> moveVelocityOutput2.Done, 
+	Busy=> moveVelocityOutput2.Busy, 
+	Active=> moveVelocityOutput2.Active, 
+	CommandAborted=> moveVelocityOutput2.CommandAborted, 
+	Error=> moveVelocityOutput2.Error, 
+	ErrorID=> moveVelocityOutput2.ErrorID);]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="checkSetPosition" Id="{6d846b6e-3828-4182-87e7-a3d037e771d6}">
+      <Implementation>
+        <ST><![CDATA[mcSetPosition1(
+	Axis:= axis1, 
+	Execute:= mcSetPosition1.Execute, 
+	Position:= 0, 
+	Mode:= , 
+	Options:= , 
+	Done=> setPositionOutput1.Done, 
+	Busy=> setPositionOutput1.Busy, 
+	Error=> setPositionOutput1.Error, 
+	ErrorID=> setPositionOutput1.ErrorID);
+	
+mcSetPosition2(
+	Axis:= axis2, 
+	Execute:= mcSetPosition2.Execute, 
+	Position:= 1800, 
+	Mode:= , 
+	Options:= , 
+	Done=> setPositionOutput2.Done, 
+	Busy=> setPositionOutput2.Busy, 
+	Error=> setPositionOutput2.Error, 
+	ErrorID=> setPositionOutput2.ErrorID);]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="checkToSuperimpose" Id="{2d6ee79e-1a3b-4050-b74b-fea2d80ae03c}">
+      <Implementation>
+        <ST><![CDATA[mcMoveSuperImposed(
+	Axis:= axis1, 
+	Execute:= mcMoveSuperImposed.Execute, 
+	Mode:= mcMoveSuperImposed.Mode, 
+	Distance:= mcMoveSuperImposed.Distance, 
+	VelocityDiff:= mcMoveSuperImposed.VelocityDiff, 
+	Acceleration:= mcMoveSuperImposed.Acceleration, 
+	Deceleration:= mcMoveSuperImposed.Deceleration, 
+	Jerk:= mcMoveSuperImposed.Jerk, 
+	VelocityProcess:= mcMoveSuperImposed.VelocityProcess, 
+	Length:= mcMoveSuperImposed.Length, 
+	Options:= , 
+	Done=> moveSuperImposedOutput.Done, 
+	Busy=> moveSuperImposedOutput.Busy, 
+	Active=> moveSuperImposedOutput.Active, 
+	CommandAborted=> moveSuperImposedOutput.CommandAborted, 
+	Error=> moveSuperImposedOutput.Error, 
+	ErrorID=> moveSuperImposedOutput.ErrorID, 
+	Warning=> moveSuperImposedOutput.Warning, 
+	WarningId=> moveSuperImposedOutput.WarningID, 
+	ActualVelocityDiff=> moveSuperImposedOutput.ActualVelocityDiff, 
+	ActualDistance=> moveSuperImposedOutput.ActualDistance, 
+	ActualLength=> moveSuperImposedOutput.ActualLength, 
+	ActualAcceleration=> moveSuperImposedOutput.ActualAcceleration, 
+	ActualDeceleration=> moveSuperImposedOutput.ActualDeceleration);]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="power" Id="{f1e6c951-35be-4b97-9466-8352ff392d12}">
+      <Implementation>
+        <ST><![CDATA[axis1.PlcToNc.ControlDWord:=7;
+axis1.PlcToNc.Override:=1000000;
+axis2.PlcToNc.ControlDWord:=7;
+axis2.PlcToNc.Override:=1000000;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="superimpose">
+      <LineId Id="601" Count="7" />
+      <LineId Id="610" Count="12" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="superimpose.checkMoveVelocity">
+      <LineId Id="24" Count="14" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="41" Count="14" />
+      <LineId Id="40" Count="0" />
+    </LineIds>
+    <LineIds Name="superimpose.checkSetPosition">
+      <LineId Id="2" Count="20" />
+    </LineIds>
+    <LineIds Name="superimpose.checkToSuperimpose">
+      <LineId Id="2" Count="23" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="superimpose.power">
+      <LineId Id="2" Count="2" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
+  <POU Name="slave" Id="{dbf4b02e-4599-4618-990b-b48c5a0ba3e6}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM slave
+VAR
+	axis: AXIS_REF;
+	
+	mcPower: MC_Power;
+	shouldPowerOn: BOOL;
+	isMotorReady: BOOL;
+	
+	mcSetPosition: MC_SetPosition;
+	shouldSetZero: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="checkPower" Id="{2379a7cf-6f88-4d52-a90b-2cfc7a819242}">
+      <Declaration><![CDATA[METHOD checkPower : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mcPower(
+	Axis:= axis, 
+	Enable:= shouldPowerOn, 
+	Enable_Positive:= TRUE, 
+	Enable_Negative:= TRUE,
+	Status=> isMotorReady
+);]]></ST>
+      </Implementation>
+    </Method>
+    <Action Name="checkSetPoint" Id="{6c975783-f282-40f4-889b-29d37e819d33}">
+      <Implementation>
+        <ST><![CDATA[mcSetPosition(
+	Axis:= axis, 
+	Execute:= shouldSetZero,
+	Position := 0);]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="dummyAction" Id="{585f1df4-8173-4897-a8cd-909d3cbfbcc2}">
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="slave">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="slave.checkPower">
+      <LineId Id="6" Count="5" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="slave.checkSetPoint">
+      <LineId Id="27" Count="2" />
+      <LineId Id="6" Count="0" />
+    </LineIds>
+    <LineIds Name="slave.dummyAction">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,301 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
+  <POU Name="flyingsaw" Id="{895b5cf6-db92-466f-a1af-d784e78c946a}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM flyingsaw
+VAR
+	Master                 :axis_Ref;
+	Slave                  :axis_Ref;
+	
+	state                  : FlyingState;
+	
+	(*Power Part*)
+	mcPowerMaster          : MC_Power;
+	powerMasterOutput      : ST_McOutputs;
+	mcPowerSlave           : MC_Power;
+	powerSlaveOutput       : ST_McOutputs;
+	PowerEnable            : BOOL;
+	
+	(*Reset Part*)
+	mcResetMaster		   : MC_Reset;
+	resetMasterOutput	   : ST_McOutputs;
+	mcResetSlave		   : MC_Reset;
+	resetSlaveOutput	   : ST_McOutputs;
+	
+	(*Move Axes Part*)
+	mcMoveMaster		   : MC_MoveVelocity;
+	moveMasterOutput	   : ST_McOutputs;
+	mcMoveSlave			   : MC_MoveAbsolute;
+	moveSlaveOutput		   : ST_McOutputs;
+	mcHaltSlave			   : MC_Halt;
+	haltSlaveOutput		   : ST_McOutputs;
+	
+	(*FlyingSaw Part*)
+	mcGearInPos			   : MC_GearInPos;
+	gearInPosOutput		   : ST_McOutputs;
+	mcGearOut			   : MC_GearOut;
+	gearOutOutput		   : ST_McOutputs;	
+	isSyncStarted          : BOOL;
+	
+	(*Timing Part*)
+	Ton_SyncTime           : TON;
+END_VAR
+
+VAR CONSTANT
+	MASTER_VELOCITY        : LREAL := 433;
+	SLAVE_MAX_VELOCITY     : LREAL := 533;
+	MASTER_SYNC_POSITION   : LREAL := 500;
+	SLAVE_SYNC_POSITION    : LREAL := 500;
+	PREFER_CONST_VELOCITY  : BOOL := TRUE;
+	IS_CHECK_ENABLED       : BOOL := FALSE;
+	SYNC_TIME              : TIME := T#5S;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Action Name="checkFlyingSaw" Id="{f9a8b03f-0ae0-4d5a-b105-4bacb6eed50f}">
+      <Implementation>
+        <ST><![CDATA[mcGearInPos(
+	Master:= Master, 
+	Slave:= Slave, 
+	Execute:= mcGearInPos.Execute, 
+	RatioNumerator:= mcGearInPos.RatioNumerator, 
+	RatioDenominator:= mcGearInPos.RatioDenominator, 
+	MasterSyncPosition:= mcGearInPos.MasterSyncPosition, 
+	SlaveSyncPosition:= mcGearInPos.SlaveSyncPosition, 
+	SyncMode:= mcGearInPos.SyncMode, 
+	MasterStartDistance:= , 
+	Velocity:= mcGearInPos.Velocity, 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Options:= , 
+	StartSync=> isSyncStarted, 
+	InSync=> gearInPosOutput.Done, 
+	Busy=> gearInPosOutput.Busy, 
+	Active=> gearInPosOutput.Active, 
+	CommandAborted=> gearInPosOutput.CommandAborted, 
+	Error=> gearInPosOutput.Error, 
+	ErrorID=> gearInPosOutput.ErrorID);
+	
+mcGearOut(
+	Slave:= Slave, 
+	Execute:= mcGearOut.Execute, 
+	Options:= , 
+	Done=> gearOutOutput.Done, 
+	Busy=> gearOutOutput.Busy, 
+	Error=> gearOutOutput.Error, 
+	ErrorID=> gearOutOutput.ErrorID);]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="checkMove" Id="{978df600-9577-4e66-8b88-2ef0b26ead7c}">
+      <Implementation>
+        <ST><![CDATA[mcMoveMaster(
+	Axis:= Master, 
+	Execute:= mcMoveMaster.Execute, 
+	Velocity:= mcMoveMaster.Velocity, 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	Direction:= mcMoveMaster.Direction, 
+	BufferMode:= , 
+	Options:= , 
+	InVelocity=> moveMasterOutput.Done, 
+	Busy=> moveMasterOutput.Busy, 
+	Active=> moveMasterOutput.Active, 
+	CommandAborted=> moveMasterOutput.CommandAborted, 
+	Error=> moveMasterOutput.Error, 
+	ErrorID=> moveMasterOutput.ErrorID);
+	
+mcMoveSlave(
+	Axis:= Slave, 
+	Execute:= mcMoveSlave.Execute, 
+	Position:= mcMoveSlave.Position, 
+	Velocity:= mcMoveSlave.Velocity, 
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Options:= , 
+	Done=> moveSlaveOutput.Done, 
+	Busy=> moveSlaveOutput.Busy, 
+	Active=> moveSlaveOutput.Active, 
+	CommandAborted=> moveSlaveOutput.CommandAborted, 
+	Error=> moveSlaveOutput.Error, 
+	ErrorID=> moveSlaveOutput.ErrorID);]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="checkPower" Id="{90d122ad-4bc1-4e98-98ac-54dae069e484}">
+      <Implementation>
+        <ST><![CDATA[mcPowerMaster(
+	Axis:= Master, 
+	Enable:= PowerEnable, 
+	Enable_Positive:= PowerEnable, 
+	Enable_Negative:= PowerEnable, 
+	Override:= 100, 
+	BufferMode:= , 
+	Options:= , 
+	Status=> powerMasterOutput.Done, 
+	Busy=> powerMasterOutput.Busy, 
+	Active=> powerMasterOutput.Active, 
+	Error=> powerMasterOutput.Error, 
+	ErrorID=> powerMasterOutput.ErrorID);
+	
+mcPowerslave(
+	Axis:= Slave, 
+	Enable:= PowerEnable, 
+	Enable_Positive:= PowerEnable, 
+	Enable_Negative:= PowerEnable, 
+	Override:= 100, 
+	BufferMode:= , 
+	Options:= , 
+	Status=> powerSlaveOutput.Done, 
+	Busy=> powerSlaveOutput.Busy, 
+	Active=> powerSlaveOutput.Active, 
+	Error=> powerSlaveOutput.Error, 
+	ErrorID=> powerSlaveOutput.ErrorID);]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="checkReset" Id="{7c56f24e-1b2d-46d9-ae54-81ade42f6fe4}">
+      <Implementation>
+        <ST><![CDATA[mcResetMaster(
+	Axis:= Master, 
+	Execute:= mcResetMaster.Execute, 
+	Done=> resetMasterOutput.Done, 
+	Busy=> resetMasterOutput.Busy, 
+	Error=> resetMasterOutput.Error, 
+	ErrorID=> resetMasterOutput.ErrorID);
+	
+mcResetSlave(
+	Axis:= Slave, 
+	Execute:= mcResetSlave.Execute, 
+	Done=> resetSlaveOutput.Done, 
+	Busy=> resetSlaveOutput.Busy, 
+	Error=> resetSlaveOutput.Error, 
+	ErrorID=> resetSlaveOutput.ErrorID);]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="checkStatus" Id="{e9db0d8a-be56-49ef-bcc6-68e67e203fe3}">
+      <Implementation>
+        <ST><![CDATA[CASE state OF 
+	STATUS_INIT:
+	(*reset all funtion blocks*)
+		mcResetMaster.Execute := FALSE;
+		mcResetSlave.Execute := FALSE;
+		mcMoveMaster.Execute := FALSE;
+		mcMoveSlave.Execute := FALSE;
+		mcGearInPos.Execute := FALSE;
+		mcGearOut.Execute := FALSE;
+		state := STATUS_ENABLE;
+	STATUS_ENABLE:
+		PowerEnable := TRUE;
+		IF mcPowerMaster.Status AND mcPowerSlave.Status THEN
+			state := STATUS_PREPARE1;
+		ELSIF mcPowerMaster.Error OR mcPowerSlave.Error THEN
+			state := STATUS_ERROR;
+		END_IF
+	STATUS_PREPARE1:
+	(*Start Master Axis*)
+		mcMoveMaster.Velocity := MASTER_VELOCITY;
+		mcMoveMaster.Execute:=TRUE;
+		IF mcMoveMaster.InVelocity THEN
+			State := STATUS_PREPARE2;
+		ELSIF mcMoveMaster.CommandAborted OR mcMoveMaster.Error THEN
+			State := STATUS_ERROR;
+		END_IF
+	STATUS_PREPARE2:
+	(*calculate synchronization parameters*)
+		mcGearOut.Execute := FALSE;
+		mcGearInPos.Execute := FALSE;
+		mcGearInPos.Velocity := SLAVE_MAX_VELOCITY;
+		mcGearInPos.MasterSyncPosition := MASTER_SYNC_POSITION;
+		mcGearInPos.SlaveSyncPosition := SLAVE_SYNC_POSITION;
+		(* activate checks *)
+		mcGearInPos.SyncMode.GearInSync_OpMask_IgnoreMasterAcc := TRUE;	                (* master acceleration is not useful if the master is an encoder axis *)
+		mcGearInPos.SyncMode.GearInSync_OpMask_PreferConstVelo := PREFER_CONST_VELOCITY; (* the synchronization will try to accelerate fast and get into constant velocity phase *)
+		IF IS_CHECK_ENABLED THEN
+			mcGearInPos.SyncMode.GearInSync_CheckMask_MaxPos := TRUE; 	                 (* check position limits *)
+			mcGearInPos.SyncMode.GearInSync_CheckMask_MinPos := TRUE; 	                 (* check position limits *)
+			mcGearInPos.SyncMode.GearInSync_CheckMask_MaxVelo := TRUE; 	                 (* check velocity limits *)
+			mcGearInPos.SyncMode.GearInSync_CheckMask_MaxAcc := FALSE; 	                 (* don't check acceleration limits *)
+			mcGearInPos.SyncMode.GearInSync_CheckMask_MaxDec := FALSE;	                 (* don't check acceleration limits *)
+;		END_IF
+		state:=STATUS_COUPLE;
+	STATUS_COUPLE:
+	(*wait for master and slave to be synchronized*)
+		mcGearInPos.Execute := TRUE;
+		IF mcGearInPos.InSync THEN
+			state := STATUS_SYNCHRONIZED;
+		ELSIF mcGearInPos.CommandAborted OR mcGearInPos.Error THEN
+			state := STATUS_ERROR;
+		END_IF
+	STATUS_SYNCHRONIZED:
+	(*master and slave in synchronized motion*)
+		Ton_SyncTime.IN := TRUE;
+		Ton_SyncTime.PT := SYNC_TIME;
+		IF Ton_SyncTime.Q THEN
+			state := STATUS_DECOUPLE;
+		END_IF
+	STATUS_DECOUPLE:
+	(*gear out-slave will keep its velocity *)
+	mcGearOut.Execute := TRUE;
+			IF  mcGearOut.Error THEN
+				mcGearOut.Execute := TRUE;
+				state := STATUS_ERROR;
+			END_IF	
+	STATUS_ERROR:
+		mcGearOut.Execute := Slave.Status.Coupled; (* gear out if done already *)
+		IF Master.Status.Error OR Slave.Status.Error  THEN
+			state := STATUS_RESET;	(* axis error requires reset *)
+		ELSE
+			state := STATUS_INIT;		(* function block errors don't need a reset *)
+		END_IF
+
+	STATUS_RESET :
+		mcResetMaster.Execute := TRUE;
+		mcResetSlave.Execute := TRUE;
+		IF mcResetMaster.Done AND mcResetSlave.Done  THEN
+			state := STATUS_INIT;
+		ELSIF mcResetMaster.Error OR mcresetslave.Error  THEN
+			state := STATUS_INIT; (* can't do anything here *)
+		END_IF	
+END_CASE]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="flyingsaw">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="flyingsaw.checkFlyingSaw">
+      <LineId Id="2" Count="21" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="26" Count="6" />
+      <LineId Id="25" Count="0" />
+    </LineIds>
+    <LineIds Name="flyingsaw.checkMove">
+      <LineId Id="2" Count="14" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="19" Count="14" />
+      <LineId Id="18" Count="0" />
+    </LineIds>
+    <LineIds Name="flyingsaw.checkPower">
+      <LineId Id="2" Count="11" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="16" Count="11" />
+      <LineId Id="15" Count="0" />
+    </LineIds>
+    <LineIds Name="flyingsaw.checkReset">
+      <LineId Id="14" Count="5" />
+      <LineId Id="1" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="22" Count="5" />
+      <LineId Id="21" Count="0" />
+    </LineIds>
+    <LineIds Name="flyingsaw.checkStatus">
+      <LineId Id="740" Count="81" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

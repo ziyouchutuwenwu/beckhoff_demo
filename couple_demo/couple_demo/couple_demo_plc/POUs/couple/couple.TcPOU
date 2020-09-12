@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
+  <POU Name="couple" Id="{6b92097d-4e58-4a28-ae5d-24f146ac388b}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM couple
+VAR
+	mcGearIn: MC_GearIn;
+	shouldGearIn: BOOL;
+	
+	mcGearOut: MC_GearOut;
+	shouldGearOut: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="checkGearIn" Id="{42c2cda4-7bfb-49a1-ac31-e31dc7e42c68}">
+      <Declaration><![CDATA[METHOD checkGearIn : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mcGearIn(
+	Master:= master.axis, 
+	Slave:= slave.axis, 
+	Execute:= shouldGearIn, 
+	RatioNumerator:= 1, // 从轴速度
+	RatioDenominator:= 1, // 主轴速度
+	Acceleration:= , 
+	Deceleration:= , 
+	Jerk:= , 
+	BufferMode:= , 
+	Options:= , 
+	InGear=> , 
+	Busy=> , 
+	Active=> , 
+	CommandAborted=> , 
+	Error=> , 
+	ErrorID=> );]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="checkGearOut" Id="{5e72b8e4-d3fb-4dd3-b7a0-5288e35c7e40}">
+      <Declaration><![CDATA[METHOD checkGearOut : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mcGearOut(
+	Slave:= slave.axis, 
+	Execute:= shouldGearOut, 
+	Options:= , 
+	Done=> , 
+	Busy=> , 
+	Error=> , 
+	ErrorID=> );]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="couple">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="couple.checkGearIn">
+      <LineId Id="6" Count="15" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="couple.checkGearOut">
+      <LineId Id="6" Count="6" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

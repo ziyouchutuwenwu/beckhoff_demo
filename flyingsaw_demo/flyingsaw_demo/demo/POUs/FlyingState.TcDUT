@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
+  <DUT Name="FlyingState" Id="{2d2f12bf-bfb0-4eb5-a70b-579a3a77bc47}">
+    <Declaration><![CDATA[{attribute 'strict'}
+TYPE FlyingState :
+(
+	STATUS_INIT,
+	STATUS_ENABLE,
+	STATUS_PREPARE1,
+	STATUS_PREPARE2,
+	STATUS_COUPLE,
+	STATUS_SYNCHRONIZED,
+	STATUS_DECOUPLE,
+	STATUS_RESET,
+	STATUS_ERROR	
+)UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.4">
+  <POU Name="single" Id="{27ad2594-0b06-4e02-974d-b9c25c9ba880}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM single
+VAR
+	axisx: AXIS_REF;
+
+	mcPower: MC_Power;
+	shouldPowerOn: BOOL;
+	isMotorReady: BOOL;
+	
+	mcSetPosition: MC_SetPosition;
+	shouldSetZero: BOOL;
+	
+	mcJog: MC_Jog;
+	shouldJog: BOOL;
+	jogDirection: BOOL;
+	
+	mcMoveRelative: MC_MoveRelative;
+	shouldMoveRel: BOOL;
+	
+	mcHalt: MC_Halt;
+	shouldHalt: BOOL;
+	
+	mcStop: MC_Stop;
+	shouldStop:BOOL;
+	
+	mcReset: MC_Reset;
+	shouldReset: BOOL;
+	
+	mcMoveVelocity: MC_MoveVelocity;
+	shouldAdjustVelocity: BOOL;
+	velocity: INT;
+	
+	mcHome: MC_Home;
+	shouldGoHome: BOOL;
+	homeTrigger: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="checkAdjustingVelocity" Id="{9e6ce4d7-1e52-4b34-bfb2-72fdd70b046a}">
+      <Declaration><![CDATA[METHOD checkAdjustingVelocity : BOOL
+VAR
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF isMotorReady THEN
+	mcMoveVelocity(
+		Axis:= axisx, 
+		Execute:= shouldAdjustVelocity,
+		Velocity:= velocity );
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="checkGoHome" Id="{7375619a-1d8c-4819-9be5-1e8c5db522ae}">
+      <Declaration><![CDATA[METHOD checkGoHome : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mcHome(
+	Axis:= axisx, 
+	Execute:= shouldGoHome, 
+	Position:= 0, 
+	bCalibrationCam:= homeTrigger
+);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="checkHalt" Id="{2e1dea5c-2b37-4412-9100-9f336f38a53a}">
+      <Declaration><![CDATA[METHOD checkHalt : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF isMotorReady THEN
+	mcHalt(
+		Axis:= axisx, 
+		Execute:= shouldHalt);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="checkMoving" Id="{09805a7c-6bc1-4dd6-8c96-108ff965a2e0}">
+      <Declaration><![CDATA[METHOD checkMoving : BOOL
+VAR_STAT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF isMotorReady THEN
+	IF shouldJog THEN
+		IF jogDirection THEN
+		mcJog(
+			Axis:= axisx, 
+			JogForward:= TRUE, 
+			JogBackwards:= FALSE,
+			Velocity:= 50);
+		ELSE
+			mcJog(
+				Axis:= axisx, 
+				JogForward:= FALSE, 
+				JogBackwards:= TRUE,
+				Velocity:= 50);
+		END_IF
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="checkPower" Id="{c64668b3-b8f3-4c8c-9e2d-b6feb4467932}">
+      <Declaration><![CDATA[METHOD checkPower : BOOL
+VAR_INPUT
+END_VAR
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[mcPower(
+	Axis:= axisx, 
+	Enable:= shouldPowerOn, 
+	Enable_Positive:= TRUE, 
+	Enable_Negative:= TRUE,
+	Status=> isMotorReady);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="checkRelMove" Id="{5a093290-3d42-43f3-afd9-4ef4314b7508}">
+      <Declaration><![CDATA[METHOD checkRelMove : BOOL
+VAR_STAT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF isMotorReady THEN
+	mcMoveRelative(
+		Axis:= axisx, 
+		Execute:= shouldMoveRel, 
+		Distance:= 2000, 
+		Velocity:= 50);
+END_IF;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="checkReset" Id="{524a7df7-b01b-404f-8b9e-670d73e37929}">
+      <Declaration><![CDATA[METHOD checkReset : BOOL]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF isMotorReady THEN
+	mcReset(
+		Axis:= axisx, 
+		Execute:= shouldReset);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Action Name="checkSetPoint" Id="{3147e69a-6538-4ecd-b3b7-7219cbda6e48}">
+      <Implementation>
+        <ST><![CDATA[mcSetPosition(
+	Axis:= axisx, 
+	Execute:= shouldSetZero,
+	Position := 0);]]></ST>
+      </Implementation>
+    </Action>
+    <Method Name="checkStop" Id="{59d6d916-623b-4e33-a0e3-1cfdd666254e}">
+      <Declaration><![CDATA[METHOD checkStop : BOOL
+VAR
+
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF isMotorReady THEN
+	mcStop(
+		Axis:= axisx, 
+		Execute:= shouldStop);
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="single">
+      <LineId Id="5" Count="0" />
+    </LineIds>
+    <LineIds Name="single.checkAdjustingVelocity">
+      <LineId Id="5" Count="0" />
+      <LineId Id="57" Count="2" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="33" Count="0" />
+    </LineIds>
+    <LineIds Name="single.checkGoHome">
+      <LineId Id="6" Count="2" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="13" Count="1" />
+    </LineIds>
+    <LineIds Name="single.checkHalt">
+      <LineId Id="5" Count="0" />
+      <LineId Id="55" Count="2" />
+      <LineId Id="45" Count="0" />
+    </LineIds>
+    <LineIds Name="single.checkMoving">
+      <LineId Id="31" Count="0" />
+      <LineId Id="121" Count="0" />
+      <LineId Id="124" Count="11" />
+      <LineId Id="122" Count="1" />
+      <LineId Id="49" Count="0" />
+    </LineIds>
+    <LineIds Name="single.checkPower">
+      <LineId Id="16" Count="0" />
+      <LineId Id="28" Count="2" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="68" Count="0" />
+    </LineIds>
+    <LineIds Name="single.checkRelMove">
+      <LineId Id="13" Count="0" />
+      <LineId Id="30" Count="4" />
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="single.checkReset">
+      <LineId Id="26" Count="3" />
+      <LineId Id="32" Count="0" />
+    </LineIds>
+    <LineIds Name="single.checkSetPoint">
+      <LineId Id="27" Count="2" />
+      <LineId Id="6" Count="0" />
+    </LineIds>
+    <LineIds Name="single.checkStop">
+      <LineId Id="74" Count="0" />
+      <LineId Id="317" Count="1" />
+      <LineId Id="315" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
