@@ -3,8 +3,8 @@
   <POU Name="flyingsaw" Id="{895b5cf6-db92-466f-a1af-d784e78c946a}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM flyingsaw
 VAR
-	Master                 :axis_Ref;
-	Slave                  :axis_Ref;
+	Master                 : AXIS_REF;
+	Slave                  : AXIS_REF;
 	
 	state                  : FlyingState;
 	
@@ -37,7 +37,7 @@ VAR
 	isSyncStarted          : BOOL;
 	
 	(*Timing Part*)
-	Ton_SyncTime           : TON;
+	syncTimeTon            : TON;
 END_VAR
 
 VAR CONSTANT
@@ -187,6 +187,7 @@ mcResetSlave(
 		mcGearInPos.Execute := FALSE;
 		mcGearOut.Execute := FALSE;
 		state := STATUS_ENABLE;
+		
 	STATUS_ENABLE:
 		PowerEnable := TRUE;
 		IF mcPowerMaster.Status AND mcPowerSlave.Status THEN
@@ -194,15 +195,17 @@ mcResetSlave(
 		ELSIF mcPowerMaster.Error OR mcPowerSlave.Error THEN
 			state := STATUS_ERROR;
 		END_IF
+		
 	STATUS_PREPARE1:
 	(*Start Master Axis*)
 		mcMoveMaster.Velocity := MASTER_VELOCITY;
-		mcMoveMaster.Execute:=TRUE;
+		mcMoveMaster.Execute := TRUE;
 		IF mcMoveMaster.InVelocity THEN
 			State := STATUS_PREPARE2;
 		ELSIF mcMoveMaster.CommandAborted OR mcMoveMaster.Error THEN
 			State := STATUS_ERROR;
 		END_IF
+		
 	STATUS_PREPARE2:
 	(*calculate synchronization parameters*)
 		mcGearOut.Execute := FALSE;
@@ -219,8 +222,9 @@ mcResetSlave(
 			mcGearInPos.SyncMode.GearInSync_CheckMask_MaxVelo := TRUE; 	                 (* check velocity limits *)
 			mcGearInPos.SyncMode.GearInSync_CheckMask_MaxAcc := FALSE; 	                 (* don't check acceleration limits *)
 			mcGearInPos.SyncMode.GearInSync_CheckMask_MaxDec := FALSE;	                 (* don't check acceleration limits *)
-;		END_IF
-		state:=STATUS_COUPLE;
+		END_IF
+		state := STATUS_COUPLE;
+		
 	STATUS_COUPLE:
 	(*wait for master and slave to be synchronized*)
 		mcGearInPos.Execute := TRUE;
@@ -229,20 +233,23 @@ mcResetSlave(
 		ELSIF mcGearInPos.CommandAborted OR mcGearInPos.Error THEN
 			state := STATUS_ERROR;
 		END_IF
+		
 	STATUS_SYNCHRONIZED:
 	(*master and slave in synchronized motion*)
-		Ton_SyncTime.IN := TRUE;
-		Ton_SyncTime.PT := SYNC_TIME;
-		IF Ton_SyncTime.Q THEN
+		syncTimeTon.IN := TRUE;
+		syncTimeTon.PT := SYNC_TIME;
+		IF syncTimeTon.Q THEN
 			state := STATUS_DECOUPLE;
 		END_IF
+		
 	STATUS_DECOUPLE:
 	(*gear out-slave will keep its velocity *)
-	mcGearOut.Execute := TRUE;
-			IF  mcGearOut.Error THEN
-				mcGearOut.Execute := TRUE;
-				state := STATUS_ERROR;
-			END_IF	
+		mcGearOut.Execute := TRUE;
+		IF  mcGearOut.Error THEN
+			mcGearOut.Execute := TRUE;
+			state := STATUS_ERROR;
+		END_IF
+
 	STATUS_ERROR:
 		mcGearOut.Execute := Slave.Status.Coupled; (* gear out if done already *)
 		IF Master.Status.Error OR Slave.Status.Error  THEN
@@ -251,7 +258,7 @@ mcResetSlave(
 			state := STATUS_INIT;		(* function block errors don't need a reset *)
 		END_IF
 
-	STATUS_RESET :
+	STATUS_RESET:
 		mcResetMaster.Execute := TRUE;
 		mcResetSlave.Execute := TRUE;
 		IF mcResetMaster.Done AND mcResetSlave.Done  THEN
@@ -294,7 +301,21 @@ END_CASE]]></ST>
       <LineId Id="21" Count="0" />
     </LineIds>
     <LineIds Name="flyingsaw.checkStatus">
-      <LineId Id="740" Count="81" />
+      <LineId Id="740" Count="9" />
+      <LineId Id="822" Count="0" />
+      <LineId Id="750" Count="6" />
+      <LineId Id="823" Count="0" />
+      <LineId Id="757" Count="8" />
+      <LineId Id="824" Count="0" />
+      <LineId Id="766" Count="17" />
+      <LineId Id="827" Count="0" />
+      <LineId Id="784" Count="7" />
+      <LineId Id="826" Count="0" />
+      <LineId Id="792" Count="6" />
+      <LineId Id="825" Count="0" />
+      <LineId Id="799" Count="6" />
+      <LineId Id="828" Count="0" />
+      <LineId Id="806" Count="15" />
       <LineId Id="1" Count="0" />
     </LineIds>
   </POU>

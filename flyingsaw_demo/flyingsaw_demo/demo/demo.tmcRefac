@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Refactors>
+  <Renames>
+    <RenamedSymbol>
+      <Type guid="895b5cf6-db92-466f-a1af-d784e78c946a">flyingsaw</Type>
+      <From>Ton_SyncTime</From>
+      <To>syncTimeTon</To>
+    </RenamedSymbol>
+  </Renames>
+</Refactors>

@@ -3,11 +3,11 @@
   <POU Name="couple" Id="{6b92097d-4e58-4a28-ae5d-24f146ac388b}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM couple
 VAR
-	mcGearIn: MC_GearIn;
-	shouldGearIn: BOOL;
+	mcGearIn			: MC_GearIn;
+	shouldGearIn		: BOOL;
 	
-	mcGearOut: MC_GearOut;
-	shouldGearOut: BOOL;
+	mcGearOut			: MC_GearOut;
+	shouldGearOut		: BOOL;
 END_VAR
 ]]></Declaration>
     <Implementation>

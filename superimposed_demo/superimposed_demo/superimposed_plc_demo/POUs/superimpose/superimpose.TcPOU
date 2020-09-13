@@ -3,20 +3,23 @@
   <POU Name="superimpose" Id="{fe3936ae-0e88-4e13-84de-a9ca4dc1186c}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM superimpose
 VAR
-	axis1:axis_ref;
-	axis2:axis_ref;
+	axis1 						: AXIS_REF;
+	axis2 						: AXIS_REF;
 			
-	mcSetPosition1, mcSetPosition2: MC_SetPosition;
-	setPositionOutput1, setPositionOutput2: ST_McOutputs;
-	shouldSetPosition: BOOL;
+	mcSetPosition1 				: MC_SetPosition;
+	mcSetPosition2 				: MC_SetPosition;
+	setPositionOutput1 			: ST_McOutputs;
+	setPositionOutput2 			: ST_McOutputs;
+	shouldSetPosition			: BOOL;
 	
-	mcMoveVelocity1: MC_MoveVelocity;
-	mcMoveVelocity2: MC_MoveVelocity;
-	moveVelocityOutput1,moveVelocityOutput2: ST_McOutputs;
-	shouldMoveVelocity: BOOL;
+	mcMoveVelocity1				: MC_MoveVelocity;
+	mcMoveVelocity2				: MC_MoveVelocity;
+	moveVelocityOutput1			: ST_McOutputs;
+	moveVelocityOutput2			: ST_McOutputs;
+	shouldMoveVelocity			: BOOL;
 	
-	mcMoveSuperImposed: MC_MoveSuperImposed;
-	moveSuperImposedOutput: superimposed_actural;
+	mcMoveSuperImposed			: MC_MoveSuperImposed;
+	moveSuperImposedOutput		: SuperimposedActural;
 	
 	positionDiff: LREAL;
 END_VAR

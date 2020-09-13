@@ -30,7 +30,7 @@
     <Compile Include="POUs\superimpose\superimpose.TcPOU">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\superimpose\superimposed_actural.TcDUT">
+    <Compile Include="POUs\superimpose\SuperimposedActural.TcDUT">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="VISUs\superimposed.TcVIS">

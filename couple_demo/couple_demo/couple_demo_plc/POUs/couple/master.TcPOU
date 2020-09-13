@@ -3,31 +3,31 @@
   <POU Name="master" Id="{51f8bfd8-5336-424e-9d39-0ed2ef8b99b5}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM master
 VAR
-	axis: AXIS_REF;
+	axis				: AXIS_REF;
 	
-	mcPower: MC_Power;
-	shouldPowerOn: BOOL;
-	isMotorReady: BOOL;
+	mcPower				: MC_Power;
+	shouldPowerOn		: BOOL;
+	isMotorReady		: BOOL;
 	
-	mcSetPosition: MC_SetPosition;
-	shouldSetZero: BOOL;
+	mcSetPosition		: MC_SetPosition;
+	shouldSetZero		: BOOL;
 	
-	mcJog: MC_Jog;
-	shouldJog: BOOL;
-	jogDirection: BOOL;
+	mcJog				: MC_Jog;
+	shouldJog			: BOOL;
+	jogDirection		: BOOL;
 	
-	mcMoveRelative: MC_MoveRelative;
-	shouldMoveRel: BOOL;
+	mcMoveRelative		: MC_MoveRelative;
+	shouldMoveRel		: BOOL;
 	
-	mcStop: MC_Stop;
-	shouldStop:BOOL;
+	mcStop				: MC_Stop;
+	shouldStop			: BOOL;
 	
-	mcReset: MC_Reset;
-	shouldReset: BOOL;
+	mcReset				: MC_Reset;
+	shouldReset			: BOOL;
 	
-	mcHome: MC_Home;
-	shouldGoHome: BOOL;
-	homeTrigger: BOOL;
+	mcHome				: MC_Home;
+	shouldGoHome		: BOOL;
+	homeTrigger			: BOOL;
 END_VAR]]></Declaration>
     <Implementation>
       <ST><![CDATA[]]></ST>

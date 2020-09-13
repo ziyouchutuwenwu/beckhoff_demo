@@ -3,34 +3,34 @@
   <POU Name="single" Id="{27ad2594-0b06-4e02-974d-b9c25c9ba880}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM single
 VAR
-	axisx: AXIS_REF;
+	axisx					: AXIS_REF;
 
-	mcPower: MC_Power;
-	shouldPowerOn: BOOL;
-	isMotorReady: BOOL;
+	mcPower					: MC_Power;
+	shouldPowerOn			: BOOL;
+	isMotorReady			: BOOL;
 	
-	mcSetPosition: MC_SetPosition;
-	shouldSetZero: BOOL;
+	mcSetPosition			: MC_SetPosition;
+	shouldSetZero			: BOOL;
 	
-	mcJog: MC_Jog;
-	shouldJog: BOOL;
-	jogDirection: BOOL;
+	mcJog					: MC_Jog;
+	shouldJog				: BOOL;
+	jogDirection			: BOOL;
 	
-	mcMoveRelative: MC_MoveRelative;
-	shouldMoveRel: BOOL;
+	mcMoveRelative			: MC_MoveRelative;
+	shouldMoveRel			: BOOL;
 	
-	mcHalt: MC_Halt;
-	shouldHalt: BOOL;
+	mcHalt					: MC_Halt;
+	shouldHalt				: BOOL;
 	
-	mcStop: MC_Stop;
-	shouldStop:BOOL;
+	mcStop					: MC_Stop;
+	shouldStop				:BOOL;
 	
-	mcReset: MC_Reset;
-	shouldReset: BOOL;
+	mcReset					: MC_Reset;
+	shouldReset				: BOOL;
 	
-	mcMoveVelocity: MC_MoveVelocity;
-	shouldAdjustVelocity: BOOL;
-	velocity: INT;
+	mcMoveVelocity			: MC_MoveVelocity;
+	shouldAdjustVelocity	: BOOL;
+	velocity				: INT;
 	
 	mcHome: MC_Home;
 	shouldGoHome: BOOL;
